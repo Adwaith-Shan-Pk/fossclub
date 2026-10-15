@@ -11,6 +11,7 @@ import { playClickSound, playSuccessSound } from "@/lib/sound";
 import { useGlassToast } from "@/components/ui/GlassToast";
 import { GlassSelect } from "@/components/ui/GlassSelect";
 import { notifySessionExpired } from "@/lib/authClient";
+import { getMemberSeniority } from "@/lib/utils";
 
 const DOMAINS: DomainType[] = ["Technical", "Corporate", "Creative"];
 const DOMAIN_PRIORITY_ORDER: DomainType[] = ["Technical", "Corporate", "Creative"];
@@ -263,11 +264,27 @@ export function CMSTeamManager() {
         return 1;
       }
 
-      // Domain Priority: Technical -> Creative -> Corporate
+      // Domain Priority: Technical -> Corporate -> Creative
       const domA = DOMAIN_PRIORITY_ORDER.indexOf(a.domain);
       const domB = DOMAIN_PRIORITY_ORDER.indexOf(b.domain);
       const domDiff = (domA === -1 ? 99 : domA) - (domB === -1 ? 99 : domB);
       if (domDiff !== 0) return domDiff;
+
+      // Seniority / Tenure: Prioritize members in > 1 year (old members) over current-year-only members
+      const senA = getMemberSeniority(a);
+      const senB = getMemberSeniority(b);
+
+      if (senA.isOld && !senB.isOld) return -1;
+      if (!senA.isOld && senB.isOld) return 1;
+
+      if (senA.isOld && senB.isOld) {
+        if (senA.earliestYear !== senB.earliestYear) {
+          return senA.earliestYear - senB.earliestYear;
+        }
+        if (senA.totalYears !== senB.totalYears) {
+          return senB.totalYears - senA.totalYears;
+        }
+      }
 
       return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
     });
