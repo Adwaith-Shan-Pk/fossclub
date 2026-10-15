@@ -128,7 +128,7 @@ export default function HomePage() {
             className="inline-flex items-center px-3.5 sm:px-4 py-1.5 rounded-full border border-white/20 bg-white/[0.08] backdrop-blur-xl text-[10.5px] xs:text-xs sm:text-xs font-mono text-white font-extrabold mb-5 sm:mb-6 shadow-[0_0_24px_rgba(34,197,94,0.22),inset_0_1px_0_rgba(255,255,255,0.3)] tracking-wider uppercase max-w-full text-center"
           >
             <span className="font-extrabold text-white">
-              <span className="text-[#22c55e] font-black text-xs sm:text-sm drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]">F</span>REE AND{" "}
+              <span className="text-[#22c55e] font-black text-xs sm:text-sm drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]">F</span>REE &{" "}
               <span className="text-[#22c55e] font-black text-xs sm:text-sm drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]">O</span>PEN{" "}
               <span className="text-[#22c55e] font-black text-xs sm:text-sm drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]">S</span>OURCE{" "}
               <span className="text-[#22c55e] font-black text-xs sm:text-sm drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]">S</span>OFTWARE

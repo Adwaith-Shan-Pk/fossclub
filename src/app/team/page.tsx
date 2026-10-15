@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useInView } from "framer-motion";
 import { Users, ChevronDown, Check, X } from "lucide-react";
 import { TeamMember, DomainType } from "@/types";
 import { playClickSound } from "@/lib/sound";
+import { getMemberSeniority } from "@/lib/utils";
 
 /* ─── Social SVGs (LinkedIn, Instagram, GitHub ONLY) ─────────────────────── */
 const GithubIcon = ({ className }: { className?: string }) => (
@@ -294,13 +295,13 @@ export default function TeamPage() {
         return true;
       })
       .sort((a, b) => {
-        // 1. Hierarchy ordering: Head -> Maintainer -> Volunteer
+        // 1. Hierarchy ordering: Head -> co-head -> Maintainer -> Volunteer
         const rankA = POSITION_ORDER.indexOf(a.position);
         const rankB = POSITION_ORDER.indexOf(b.position);
         const rankDiff = (rankA === -1 ? 99 : rankA) - (rankB === -1 ? 99 : rankB);
         if (rankDiff !== 0) return rankDiff;
 
-        // 2. Index / Order (optional field): lower numbers show first
+        // 2. Index / Order (optional field): lower numbers show first (highest preference)
         const idxA = a.member.order ?? a.member.index;
         const idxB = b.member.order ?? b.member.index;
         const hasIdxA = typeof idxA === "number" && !isNaN(idxA);
@@ -314,13 +315,32 @@ export default function TeamPage() {
           return 1; // Member with index comes first
         }
 
-        // 3. Domain Priority: Technical -> Creative -> Corporate
+        // 3. Domain Priority: Technical -> Corporate -> Creative
         const domA = DOMAIN_PRIORITY_ORDER.indexOf(a.member.domain);
         const domB = DOMAIN_PRIORITY_ORDER.indexOf(b.member.domain);
         const domDiff = (domA === -1 ? 99 : domA) - (domB === -1 ? 99 : domB);
         if (domDiff !== 0) return domDiff;
 
-        // 4. Alphabetical order by member name
+        // 4. Seniority / Tenure: Prioritize members in > 1 year (old members) over current-year-only members
+        const senA = getMemberSeniority(a.member);
+        const senB = getMemberSeniority(b.member);
+
+        // Old members (more than 1 year) come before new members (1 year / current year only)
+        if (senA.isOld && !senB.isOld) return -1;
+        if (!senA.isOld && senB.isOld) return 1;
+
+        // If both are old members, prioritize by earliest year joined (ascending: earlier year first)
+        if (senA.isOld && senB.isOld) {
+          if (senA.earliestYear !== senB.earliestYear) {
+            return senA.earliestYear - senB.earliestYear;
+          }
+          // If joined in same year, prioritize more total years in club (descending)
+          if (senA.totalYears !== senB.totalYears) {
+            return senB.totalYears - senA.totalYears;
+          }
+        }
+
+        // 5. Alphabetical order by member name
         return a.member.name.localeCompare(b.member.name, undefined, { sensitivity: "base" });
       });
   }, [members, filterDomain, filterYear, filterPosition]);
