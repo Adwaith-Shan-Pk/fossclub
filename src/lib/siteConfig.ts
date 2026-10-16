@@ -32,7 +32,7 @@ export const siteConfig = {
   alternateName: ["FOSS Club SRM Kattankulathur", "FOSS Club SRM KTR"],
   tagline: "Build in Public. Contribute to Free & Open Source Software.",
   url: getSiteUrl(),
-  email: "fossclubsrmktr@gmail.com",
+  email: "community@fossclubsrm.in",
   themeColor: "#22c55e",
   backgroundColor: "#000000",
   location: {
